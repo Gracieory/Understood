@@ -628,9 +628,14 @@ function mdemo(n){
 async function manal(){
   const btn=document.getElementById('mbtn');btn.disabled=true;btn.innerHTML=ldots();
   document.getElementById('mres').innerHTML=spin('amber');
-  const sys=`你是温和的医药助手帮老年人看药。只返回JSON，不要其他文字：
-{"greeting":"亲切开头","drugName":"药名","drugType":"类型如感冒药","dosageInstructions":[{"icon":"⏰/💊/🍚/💧/🌙之一","main":"用法说明","sub":"补充（可选）"}],"warnings":["注意1","注意2"]}
-语言大白话，像家人说话。药盒可能是中文或英文，无论哪种语言，输出必须全部用中文。`;
+  const sys=`你是温和的健康助手，帮老年人看懂任何产品的标签——包括药品、保健品、护肤品、外用品等。只返回JSON，不要其他文字：
+{"greeting":"亲切开头，说清楚这是什么产品","drugName":"产品名称","drugType":"产品类型，如：感冒药、护肤品、外用软膏、保健品等","dosageInstructions":[{"icon":"⏰/💊/🍚/💧/🌙/🖐之一","main":"用法说明","sub":"补充（可选）"}],"warnings":["注意1","注意2"]}
+规则：
+- 药品重点写剂量和服用方法
+- 护肤/外用品重点写怎么用、用多少、用在哪里
+- 语言大白话，像家人说话
+- 中英文标签都能识别，输出必须全部用中文
+- 如果图片模糊或无法识别，greeting里说明"照片不太清晰，请重拍一张"`;
   try{
     const msgs=mImg
       ?[{role:"user",content:[{type:"image",source:{type:"base64",media_type:"image/jpeg",data:mImg}},{type:"text",text:"请分析这个药盒，JSON格式输出。"}]}]
