@@ -17,8 +17,8 @@
   --yellow:#9A6C00;--yellow-bg:#FDF6E3;--yellow-bd:#E8CB80;
   --teal:#1A6C7A;--teal-bg:#E6F4F7;--teal-bd:#7DC4CF;
 }
-html,body{height:100%;overflow:hidden;}body{background:var(--bg);font-family:'Noto Sans SC',sans-serif;margin:0;padding:0;}
-.phone{width:100%;max-width:480px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
+html{height:100%;}body{height:100%;margin:0;padding:0;background:var(--bg);font-family:'Noto Sans SC',sans-serif;-webkit-text-size-adjust:100%;}
+.phone{width:100%;max-width:480px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;height:100vh;overflow:hidden;position:fixed;top:0;left:0;right:0;bottom:0;}
 .sbar{background:var(--card);border-bottom:1px solid var(--bd);padding:12px 20px 10px;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .sicon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center}
 .sicon.amber{background:var(--amber)}.sicon.slate{background:var(--slate)}.sicon.sage{background:var(--sage)}.sicon.teal{background:var(--teal)}
@@ -531,7 +531,7 @@ async function chatSend(){
   appendTyping(typingId);
 
   try{
-    const res=await fetch("https://understood.gracyzhang43.workers.dev",{
+    const res=await fetch("https://flow-api.gracyzhang43.workers.dev",{
       method:"POST",
       headers:{
         "Content-Type":"application/json",
@@ -640,7 +640,7 @@ async function manal(){
     const msgs=mImg
       ?[{role:"user",content:[{type:"image",source:{type:"base64",media_type:"image/jpeg",data:mImg}},{type:"text",text:"请分析这个药盒，JSON格式输出。"}]}]
       :[{role:"user",content:`药品名称：${mDemoName}，请分析常规用法，JSON格式，重点写老年人注意事项。`}];
-    const d=await(await fetch("https://understood.gracyzhang43.workers.dev",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,system:sys,messages:msgs})})).json();
+    const d=await(await fetch("https://flow-api.gracyzhang43.workers.dev",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:900,system:sys,messages:msgs})})).json();
     const i=JSON.parse(d.content.map(x=>x.text||'').join('').replace(/```json|```/g,'').trim());
     const dh=(i.dosageInstructions||[]).map(x=>`<div class="dr"><span class="di">${x.icon}</span><div><span class="dt">${x.main}</span>${x.sub?`<span class="ds">${x.sub}</span>`:''}</div></div>`).join('');
     const wh=(i.warnings||[]).map(w=>`<div class="wi"><div class="wd"></div><span class="wt">${w}</span></div>`).join('');
@@ -666,7 +666,7 @@ async function fscan(){
   const sys=`你是帮老年人识别诈骗的安全顾问，语气像子女关心父母。只返回JSON，不要其他文字：
 {"riskLevel":"red|yellow|green","verdict":"10字内判断","riskSub":"15字补充","fraudType":"类型或空字符串","clues":["可疑点1","可疑点2","可疑点3"],"advice":"子女口吻2-3句建议"}`;
   try{
-    const d=await(await fetch("https://understood.gracyzhang43.workers.dev",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,system:sys,messages:[{role:"user",content:`来源：${ftabV==='sms'?'短信/微信':ftabV==='call'?'电话话术':'可疑链接'}\n\n${text}`}]})})).json();
+    const d=await(await fetch("https://flow-api.gracyzhang43.workers.dev",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:700,system:sys,messages:[{role:"user",content:`来源：${ftabV==='sms'?'短信/微信':ftabV==='call'?'电话话术':'可疑链接'}\n\n${text}`}]})})).json();
     const r=JSON.parse(d.content.map(x=>x.text||'').join('').replace(/```json|```/g,'').trim());
     const lv=r.riskLevel||'yellow',ic={red:'🚨',yellow:'⚠️',green:'✅'},lb={red:'高风险警告',yellow:'请注意',green:'暂时安全'};
     const ch=(r.clues||[]).map(c=>`<div class="ci"><div class="cd ${lv}"></div><span class="ct">${c}</span></div>`).join('');
